@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Microscope Size Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input, select, button {
+      padding: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #28a745;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+
+    thead {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Microscope to Real-Life Size Converter</h1>
+
+    <form id="sizeForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" required>
+
+      <label for="microSize">Microscopic Size:</label>
+      <input type="number" id="microSize" step="any" required>
+
+      <label for="unit">Unit:</label>
+      <select id="unit">
+        <option value="µm">µm</option>
+        <option value="mm">mm</option>
+      </select>
+
+      <label for="magnification">Magnification:</label>
+      <input type="number" id="magnification" step="any" required>
+
+      <button type="submit">Calculate & Save</button>
+    </form>
+
+    <div id="result"></div>
+
+    <h2>Saved Records</h2>
+    <table id="recordsTable">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Microscopic Size</th>
+          <th>Unit</th>
+          <th>Magnification</th>
+          <th>Real-life Size (mm)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const form = document.getElementById('sizeForm');
+    const resultDiv = document.getElementById('result');
+    const tableBody = document.querySelector('#recordsTable tbody');
+
+    let records = [];
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      const microSize = parseFloat(document.getElementById('microSize').value);
+      const unit = document.getElementById('unit').value;
+      const magnification = parseFloat(document.getElementById('magnification').value);
+
+      if (!username || isNaN(microSize) || isNaN(magnification)) {
+        alert("Please enter all required fields correctly.");
+        return;
+      }
+
+      let microSizeMM = unit === "µm" ? microSize / 1000 : microSize;
+      let realLifeSize = microSizeMM / magnification;
+
+      resultDiv.textContent = `Real-life size: ${realLifeSize.toFixed(6)} mm`;
+
+      // Save record to in-memory array
+      records.push({ username, microSize, unit, magnification, realLifeSize });
+      updateTable();
+      form.reset();
+    });
+
+    function updateTable() {
+      tableBody.innerHTML = "";
+      records.forEach((record) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${record.username}</td>
+          <td>${record.microSize}</td>
+          <td>${record.unit}</td>
+          <td>${record.magnification}</td>
+          <td>${record.realLifeSize.toFixed(6)}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
+ 
